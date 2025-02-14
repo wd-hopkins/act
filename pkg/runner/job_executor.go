@@ -21,6 +21,13 @@ type jobInfo interface {
 
 //nolint:contextcheck
 func newJobExecutor(info jobInfo, sf stepFactory, rc *RunContext) common.Executor {
+	if rc.Run.Job().Result != "" {
+		return func(ctx context.Context) error {
+			setJobResult(ctx, info, rc, rc.Run.Job().Result == "success")
+			setJobOutputs(ctx, rc)
+			return nil
+		}
+	}
 	steps := make([]common.Executor, 0)
 	preSteps := make([]common.Executor, 0)
 	var postExecutor common.Executor
