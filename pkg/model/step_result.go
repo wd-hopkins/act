@@ -38,6 +38,12 @@ func (s stepStatus) String() string {
 	return stepStatusStrings[s]
 }
 
+func ToStepStatus(s string) stepStatus {
+	status := stepStatus(-1)
+	status.UnmarshalText([]byte(s))
+	return status
+}
+
 type StepResult struct {
 	Outputs    map[string]string `json:"outputs"`
 	Conclusion stepStatus        `json:"conclusion"`

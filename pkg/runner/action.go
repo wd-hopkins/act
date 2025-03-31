@@ -395,7 +395,7 @@ func newStepContainer(ctx context.Context, step step, image string, cmd []string
 			rawLogger.Debugf("%s", s)
 		}
 		return true
-	})
+	}, stepModel.LogHandler())
 	envList := make([]string, 0)
 	for k, v := range *step.getEnv() {
 		envList = append(envList, fmt.Sprintf("%s=%s", k, v))
