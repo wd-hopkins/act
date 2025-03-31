@@ -101,7 +101,7 @@ func (sd *stepDocker) newStepContainer(ctx context.Context, image string, cmd []
 			rawLogger.Debugf("%s", s)
 		}
 		return true
-	})
+	}, step.LogHandler())
 	envList := make([]string, 0)
 	for k, v := range sd.env {
 		envList = append(envList, fmt.Sprintf("%s=%s", k, v))

@@ -142,6 +142,7 @@ func NewReusableWorkflowRunner(rc *RunContext) (Runner, error) {
 			runContext: rc,
 		},
 	}
+	rc.ChildContexts = &runner.RunContexts
 
 	return runner.configure()
 }

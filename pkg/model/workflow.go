@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -70,10 +71,10 @@ func (w *Workflow) OnEvent(event string) interface{} {
 func (w *Workflow) UnmarshalYAML(node *yaml.Node) error {
 	// Validate the schema before deserializing it into our model
 	if err := (&schema.Node{
-		Definition: "workflow-root-strict",
+		Definition: "workflow-root",
 		Schema:     schema.GetWorkflowSchema(),
 	}).UnmarshalYAML(node); err != nil {
-		return err
+		return errors.Join(err, fmt.Errorf("Actions YAML Schema Validation Error detected:\nFor more information, see: https://nektosact.com/usage/schema.html"))
 	}
 	type WorkflowDefault Workflow
 	return node.Decode((*WorkflowDefault)(w))
@@ -477,6 +478,19 @@ func (j *Job) GetMatrixes() ([]map[string]interface{}, error) {
 	return matrixes, nil
 }
 
+// GetStep will get a step by name in the job
+func (j *Job) GetStep(stepID string) *Step {
+	for _, s := range j.Steps {
+		if stepID == s.ID {
+			if s.Name == "" {
+				s.Name = s.ID
+			}
+			return s
+		}
+	}
+	return nil
+}
+
 func commonKeysMatch(a map[string]interface{}, b map[string]interface{}) bool {
 	for aKey, aVal := range a {
 		if bVal, ok := b[aKey]; ok && !reflect.DeepEqual(aVal, bVal) {
@@ -579,6 +593,8 @@ type Step struct {
 	With               map[string]string `yaml:"with"`
 	RawContinueOnError string            `yaml:"continue-on-error"`
 	TimeoutMinutes     string            `yaml:"timeout-minutes"`
+	Result             string
+	Logs               string
 }
 
 // String gets the name of step
@@ -638,6 +654,13 @@ func (s *Step) ShellCommand() string {
 		shellCommand = s.Shell
 	}
 	return shellCommand
+}
+
+func (s *Step) LogHandler() func(string) bool {
+	return func(line string) bool {
+		s.Logs += line
+		return true
+	}
 }
 
 // StepType describes what type of step we are about to run

@@ -12,6 +12,7 @@ import (
 	"github.com/nektos/act/pkg/container"
 	"github.com/nektos/act/pkg/exprparser"
 	"github.com/nektos/act/pkg/model"
+	"github.com/sirupsen/logrus"
 )
 
 type step interface {
@@ -79,6 +80,23 @@ func runStepExecutor(step step, stage stepStage, executor common.Executor) commo
 			rc.StepResults[rc.CurrentStep] = stepResult
 		}
 
+		defer func() {
+			if rc.Run.StepOutputsFunc != nil {
+				if outputs := rc.Run.StepOutputsFunc(step.getStepModel()); outputs != nil {
+					stepResult.Outputs = outputs
+				}
+			}
+			step.getStepModel().Result = stepResult.Outcome.String()
+		}()
+
+		if rc.Run.StepResultsFunc != nil {
+			if ok, result := rc.Run.StepResultsFunc(step.getStepModel()); ok {
+				stepResult.Outcome = model.ToStepStatus(result)
+				stepResult.Conclusion = model.ToStepStatus(result)
+				return nil
+			}
+		}
+
 		err := setupEnv(ctx, step)
 		if err != nil {
 			return err
@@ -141,10 +159,12 @@ func runStepExecutor(step step, stage stepStage, executor common.Executor) commo
 
 		timeoutctx, cancelTimeOut := evaluateStepTimeout(ctx, rc.ExprEval, stepModel)
 		defer cancelTimeOut()
+		startTime := time.Now()
 		err = executor(timeoutctx)
+		executionTime := time.Since(startTime)
 
 		if err == nil {
-			logger.WithField("stepResult", stepResult.Outcome).Infof("  \u2705  Success - %s %s", stage, stepString)
+			logger.WithFields(logrus.Fields{"executionTime": executionTime, "stepResult": stepResult.Outcome}).Infof("  \u2705  Success - %s %s [%s]", stage, stepString, executionTime)
 		} else {
 			stepResult.Outcome = model.StepStatusFailure
 
@@ -162,7 +182,7 @@ func runStepExecutor(step step, stage stepStage, executor common.Executor) commo
 				stepResult.Conclusion = model.StepStatusFailure
 			}
 
-			logger.WithField("stepResult", stepResult.Outcome).Errorf("  \u274C  Failure - %s %s", stage, stepString)
+			logger.WithFields(logrus.Fields{"executionTime": executionTime, "stepResult": stepResult.Outcome}).Infof("  \u274C  Failure - %s %s [%s]", stage, stepString, executionTime)
 		}
 		// Process Runner File Commands
 		orgerr := err
