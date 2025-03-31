@@ -33,8 +33,10 @@ type Stage struct {
 
 // Run represents a job from a workflow that needs to be run
 type Run struct {
-	Workflow *Workflow
-	JobID    string
+	Workflow        *Workflow
+	JobID           string
+	StepResultsFunc func(*Step) (bool, string)
+	StepOutputsFunc func(*Step) map[string]string
 }
 
 func (r *Run) String() string {

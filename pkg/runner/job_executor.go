@@ -216,7 +216,7 @@ func useStepLogger(rc *RunContext, stepModel *model.Step, stage stepStage, execu
 				rawLogger.Debugf("%s", s)
 			}
 			return true
-		})
+		}, stepModel.LogHandler())
 
 		oldout, olderr := rc.JobContainer.ReplaceLogWriter(logWriter, logWriter)
 		defer rc.JobContainer.ReplaceLogWriter(oldout, olderr)

@@ -266,6 +266,10 @@ func (runner *runnerImpl) newRunContext(ctx context.Context, run *model.Run, mat
 		Matrix:      matrix,
 		caller:      runner.caller,
 	}
+	if runner.caller != nil {
+		rc.Run.StepResultsFunc = runner.caller.runContext.Run.StepResultsFunc
+		rc.Run.StepOutputsFunc = runner.caller.runContext.Run.StepOutputsFunc
+	}
 	rc.ExprEval = rc.NewExpressionEvaluator(ctx)
 	rc.Name = rc.ExprEval.Interpolate(ctx, run.String())
 
