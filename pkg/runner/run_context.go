@@ -49,6 +49,7 @@ type RunContext struct {
 	ActionPath          string
 	Parent              *RunContext
 	Masks               []string
+	ChildContexts       *[]*RunContext
 	cleanUpJobContainer common.Executor
 	caller              *caller // job calling this RunContext (reusable workflows)
 	nodeToolFullPath    string
