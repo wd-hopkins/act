@@ -470,10 +470,10 @@ func (j *Job) GetMatrixes() ([]map[string]interface{}, error) {
 	return matrixes, nil
 }
 
-// GetStep will get a step by name in the job
+// GetStep will get a step by name or id in the job
 func (j *Job) GetStep(stepID string) *Step {
 	for _, s := range j.Steps {
-		if stepID == s.ID {
+		if stepID == s.ID || s.Name == stepID {
 			if s.Name == "" {
 				s.Name = s.ID
 			}
