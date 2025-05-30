@@ -21,11 +21,11 @@ import (
 	"time"
 
 	"github.com/docker/go-connections/nat"
-	"github.com/nektos/act/pkg/common"
-	"github.com/nektos/act/pkg/container"
-	"github.com/nektos/act/pkg/exprparser"
-	"github.com/nektos/act/pkg/model"
 	"github.com/opencontainers/selinux/go-selinux"
+	"github.com/wd-hopkins/act/pkg/common"
+	"github.com/wd-hopkins/act/pkg/container"
+	"github.com/wd-hopkins/act/pkg/exprparser"
+	"github.com/wd-hopkins/act/pkg/model"
 )
 
 // RunContext contains info about current job
