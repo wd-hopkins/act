@@ -49,6 +49,7 @@ type RunContext struct {
 	ActionPath          string
 	Parent              *RunContext
 	Masks               []string
+	ChildContexts       *[]*RunContext
 	cleanUpJobContainer common.Executor
 	caller              *caller // job calling this RunContext (reusable workflows)
 	Cancelled           bool
@@ -784,6 +785,12 @@ func (rc *RunContext) options(ctx context.Context) string {
 func (rc *RunContext) isEnabled(ctx context.Context) (bool, error) {
 	job := rc.Run.Job()
 	l := common.Logger(ctx)
+
+	if job.Result == "skipped" {
+		l.WithField("jobResult", "skipped").Infof("\U0001F3C1  Job skipped")
+		return false, nil
+	}
+
 	runJob, runJobErr := EvalBool(ctx, rc.ExprEval, job.If.Value, exprparser.DefaultStatusCheckSuccess)
 	jobType, jobTypeErr := job.Type()
 

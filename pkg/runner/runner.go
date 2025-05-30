@@ -16,6 +16,7 @@ import (
 // Runner provides capabilities to run GitHub actions
 type Runner interface {
 	NewPlanExecutor(plan *model.Plan) common.Executor
+	GetRunContexts() []*RunContext
 }
 
 // Config contains the config for a new runner
@@ -82,9 +83,14 @@ type caller struct {
 }
 
 type runnerImpl struct {
-	config    *Config
-	eventJSON string
-	caller    *caller // the job calling this runner (caller of a reusable workflow)
+	config      *Config
+	eventJSON   string
+	caller      *caller // the job calling this runner (caller of a reusable workflow)
+	RunContexts []*RunContext
+}
+
+func (runner *runnerImpl) GetRunContexts() []*RunContext {
+	return runner.RunContexts
 }
 
 // New Creates a new Runner
@@ -189,6 +195,7 @@ func (runner *runnerImpl) NewPlanExecutor(plan *model.Plan) common.Executor {
 
 				for i, matrix := range matrixes {
 					rc := runner.newRunContext(ctx, run, matrix)
+					runner.RunContexts = append(runner.RunContexts, rc)
 					rc.JobName = rc.Name
 					if len(matrixes) > 1 {
 						rc.Name = fmt.Sprintf("%s-%d", rc.Name, i+1)
@@ -258,6 +265,10 @@ func (runner *runnerImpl) newRunContext(ctx context.Context, run *model.Run, mat
 		StepResults: make(map[string]*model.StepResult),
 		Matrix:      matrix,
 		caller:      runner.caller,
+	}
+	if runner.caller != nil {
+		rc.Run.StepResultsFunc = runner.caller.runContext.Run.StepResultsFunc
+		rc.Run.StepOutputsFunc = runner.caller.runContext.Run.StepOutputsFunc
 	}
 	rc.ExprEval = rc.NewExpressionEvaluator(ctx)
 	rc.Name = rc.ExprEval.Interpolate(ctx, run.String())

@@ -44,6 +44,12 @@ func (sar *stepActionRemote) prepareActionExecutor() common.Executor {
 			return nil
 		}
 
+		if sar.RunContext.Run.StepResultsFunc != nil {
+			if ok, _ := sar.RunContext.Run.StepResultsFunc(sar.Step); ok {
+				return nil
+			}
+		}
+
 		sar.remoteAction = newRemoteAction(sar.Step.Uses)
 		if sar.remoteAction == nil {
 			return fmt.Errorf("Expected format {org}/{repo}[/path]@ref. Actual '%s' Input string was not in a correct format", sar.Step.Uses)

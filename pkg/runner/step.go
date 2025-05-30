@@ -80,6 +80,23 @@ func runStepExecutor(step step, stage stepStage, executor common.Executor) commo
 			rc.StepResults[rc.CurrentStep] = stepResult
 		}
 
+		defer func() {
+			if rc.Run.StepOutputsFunc != nil {
+				if outputs := rc.Run.StepOutputsFunc(step.getStepModel()); outputs != nil {
+					stepResult.Outputs = outputs
+				}
+			}
+			step.getStepModel().Result = stepResult.Outcome.String()
+		}()
+
+		if rc.Run.StepResultsFunc != nil {
+			if ok, result := rc.Run.StepResultsFunc(step.getStepModel()); ok {
+				stepResult.Outcome = model.ToStepStatus(result)
+				stepResult.Conclusion = model.ToStepStatus(result)
+				return nil
+			}
+		}
+
 		err := setupEnv(ctx, step)
 		if err != nil {
 			return err
