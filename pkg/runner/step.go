@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nektos/act/pkg/common"
-	"github.com/nektos/act/pkg/container"
-	"github.com/nektos/act/pkg/exprparser"
-	"github.com/nektos/act/pkg/model"
 	"github.com/sirupsen/logrus"
+	"github.com/wd-hopkins/act/pkg/common"
+	"github.com/wd-hopkins/act/pkg/container"
+	"github.com/wd-hopkins/act/pkg/exprparser"
+	"github.com/wd-hopkins/act/pkg/model"
 )
 
 type step interface {

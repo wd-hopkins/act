@@ -8,9 +8,9 @@ import (
 	"runtime"
 
 	docker_container "github.com/docker/docker/api/types/container"
-	"github.com/nektos/act/pkg/common"
-	"github.com/nektos/act/pkg/model"
 	log "github.com/sirupsen/logrus"
+	"github.com/wd-hopkins/act/pkg/common"
+	"github.com/wd-hopkins/act/pkg/model"
 )
 
 // Runner provides capabilities to run GitHub actions

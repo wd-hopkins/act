@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nektos/act/pkg/common"
-	"github.com/nektos/act/pkg/schema"
 	log "github.com/sirupsen/logrus"
+	"github.com/wd-hopkins/act/pkg/common"
+	"github.com/wd-hopkins/act/pkg/schema"
 	"gopkg.in/yaml.v3"
 )
 

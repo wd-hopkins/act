@@ -11,9 +11,9 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/nektos/act/pkg/common"
-	"github.com/nektos/act/pkg/common/git"
-	"github.com/nektos/act/pkg/model"
+	"github.com/wd-hopkins/act/pkg/common"
+	"github.com/wd-hopkins/act/pkg/common/git"
+	"github.com/wd-hopkins/act/pkg/model"
 )
 
 func newLocalReusableWorkflowExecutor(rc *RunContext) common.Executor {

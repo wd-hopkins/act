@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nektos/act/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/wd-hopkins/act/pkg/model"
 )
 
 type closerMock struct {

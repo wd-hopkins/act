@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/nektos/act/pkg/common"
+	"github.com/wd-hopkins/act/pkg/common"
 
 	"github.com/sirupsen/logrus"
 )

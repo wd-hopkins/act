@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/nektos/act/pkg/common"
-	"github.com/nektos/act/pkg/model"
+	"github.com/wd-hopkins/act/pkg/common"
+	"github.com/wd-hopkins/act/pkg/model"
 )
 
 func evaluateCompositeInputAndEnv(ctx context.Context, parent *RunContext, step actionStep) map[string]string {
