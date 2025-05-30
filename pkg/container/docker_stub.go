@@ -7,8 +7,8 @@ import (
 	"runtime"
 
 	"github.com/docker/docker/api/types/system"
-	"github.com/nektos/act/pkg/common"
 	"github.com/pkg/errors"
+	"github.com/wd-hopkins/act/pkg/common"
 )
 
 // ImageExistsLocally returns a boolean indicating if an image with the

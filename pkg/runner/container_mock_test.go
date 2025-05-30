@@ -4,9 +4,9 @@ import (
 	"context"
 	"io"
 
-	"github.com/nektos/act/pkg/common"
-	"github.com/nektos/act/pkg/container"
 	"github.com/stretchr/testify/mock"
+	"github.com/wd-hopkins/act/pkg/common"
+	"github.com/wd-hopkins/act/pkg/container"
 )
 
 type containerMock struct {

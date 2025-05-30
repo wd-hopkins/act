@@ -3,8 +3,8 @@ package runner
 import (
 	"testing"
 
-	"github.com/nektos/act/pkg/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/wd-hopkins/act/pkg/model"
 )
 
 func TestStepFactoryNewStep(t *testing.T) {

@@ -1,4 +1,4 @@
-module github.com/nektos/act
+module github.com/wd-hopkins/act
 
 go 1.24.0
 

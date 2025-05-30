@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/nektos/act/pkg/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/wd-hopkins/act/pkg/model"
 )
 
 func TestFunctionContains(t *testing.T) {
