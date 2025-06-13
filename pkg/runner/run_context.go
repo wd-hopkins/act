@@ -90,6 +90,26 @@ func (rc *RunContext) GetEnv() map[string]string {
 	return rc.Env
 }
 
+func (rc *RunContext) StepLogHandler(step *model.Step) func(string) bool {
+	return func(line string) bool {
+		if !rc.Config.InsecureSecrets {
+			for _, v := range rc.Config.Secrets {
+				if v != "" {
+					line = strings.ReplaceAll(line, v, "***")
+				}
+			}
+
+			for _, v := range rc.Masks {
+				if v != "" {
+					line = strings.ReplaceAll(line, v, "***")
+				}
+			}
+		}
+		step.Logs += line
+		return true
+	}
+}
+
 func (rc *RunContext) jobContainerName() string {
 	return createContainerName("act", rc.String())
 }
