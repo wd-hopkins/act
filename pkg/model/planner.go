@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/wd-hopkins/act/pkg/container"
 	"io"
 	"io/fs"
 	"math"
@@ -37,6 +38,8 @@ type Run struct {
 	JobID           string
 	StepResultsFunc func(*Step) (bool, string)
 	StepOutputsFunc func(*Step) map[string]string
+	FileMounts      map[string]*container.FileEntry
+	BindMounts      []string
 }
 
 func (r *Run) String() string {

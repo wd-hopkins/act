@@ -421,6 +421,7 @@ func (cr *containerReference) create(capAdd []string, capDrop []string) common.E
 			WorkingDir:   input.WorkingDir,
 			Env:          input.Env,
 			ExposedPorts: input.ExposedPorts,
+			User:         input.User,
 			Tty:          isTerminal,
 		}
 		logger.Debugf("Common container.Config ==> %+v", config)

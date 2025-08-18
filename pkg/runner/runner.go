@@ -49,6 +49,7 @@ type Config struct {
 	ContainerOptions                   string                       // Options for the job container
 	UseGitIgnore                       bool                         // controls if paths in .gitignore should not be copied into container, default true
 	GitHubInstance                     string                       // GitHub instance to use, default "github.com"
+	RunAsUser                          string                       // User UID with which to run the job container
 	ContainerCapAdd                    []string                     // list of kernel capabilities to add to the containers
 	ContainerCapDrop                   []string                     // list of kernel capabilities to remove from the containers
 	AutoRemove                         bool                         // controls if the container is automatically removed upon workflow completion
@@ -264,6 +265,7 @@ func (runner *runnerImpl) newRunContext(ctx context.Context, run *model.Run, mat
 		EventJSON:   runner.eventJSON,
 		StepResults: make(map[string]*model.StepResult),
 		Matrix:      matrix,
+		FileMounts:  run.FileMounts,
 		caller:      runner.caller,
 	}
 	if runner.caller != nil {
