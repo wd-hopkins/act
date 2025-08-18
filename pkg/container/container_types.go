@@ -25,6 +25,7 @@ type NewContainerInput struct {
 	NetworkMode    string
 	Privileged     bool
 	UsernsMode     string
+	User           string
 	Platform       string
 	Options        string
 	NetworkAliases []string

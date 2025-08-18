@@ -54,6 +54,7 @@ type RunContext struct {
 	caller              *caller // job calling this RunContext (reusable workflows)
 	Cancelled           bool
 	nodeToolFullPath    string
+	FileMounts          map[string]*container.FileEntry
 }
 
 func (rc *RunContext) AddMask(mask string) {
@@ -201,6 +202,8 @@ func (rc *RunContext) GetBindsAndMounts() ([]string, map[string]string) {
 		mounts[name] = ext.ToContainerPath(rc.Config.Workdir)
 	}
 
+	binds = append(binds, rc.Run.BindMounts...)
+
 	return binds, mounts
 }
 
@@ -271,6 +274,14 @@ func (rc *RunContext) startHostEnvironment() common.Executor {
 			}),
 		)(ctx)
 	}
+}
+
+func (rc *RunContext) mountAdditionalFiles() common.Executor {
+	var tasks []common.Executor
+	for path, fileEntry := range rc.FileMounts {
+		tasks = append(tasks, rc.JobContainer.Copy(path, fileEntry))
+	}
+	return common.NewPipelineExecutor(tasks...)
 }
 
 func (rc *RunContext) startJobContainer() common.Executor {
@@ -368,6 +379,7 @@ func (rc *RunContext) startJobContainer() common.Executor {
 				NetworkAliases: []string{serviceID},
 				ExposedPorts:   exposedPorts,
 				PortBindings:   portBindings,
+				User:           rc.Config.RunAsUser,
 			})
 			rc.ServiceContainers = append(rc.ServiceContainers, c)
 		}
@@ -430,6 +442,7 @@ func (rc *RunContext) startJobContainer() common.Executor {
 			UsernsMode:     rc.Config.UsernsMode,
 			Platform:       rc.Config.ContainerArchitecture,
 			Options:        rc.options(ctx),
+			User:           rc.Config.RunAsUser,
 		})
 		if rc.JobContainer == nil {
 			return errors.New("Failed to create job container")
@@ -452,6 +465,7 @@ func (rc *RunContext) startJobContainer() common.Executor {
 				Mode: 0o666,
 				Body: "",
 			}),
+			rc.mountAdditionalFiles(),
 			rc.waitForServiceContainers(),
 		)(ctx)
 	}
