@@ -591,6 +591,7 @@ type Step struct {
 	TimeoutMinutes     string            `yaml:"timeout-minutes"`
 	Result             string
 	Logs               string
+	EnvOverrides       map[string]string
 }
 
 // String gets the name of step
@@ -618,6 +619,10 @@ func (s *Step) GetEnv() map[string]string {
 		envKey := regexp.MustCompile("[^A-Z0-9-]").ReplaceAllString(strings.ToUpper(k), "_")
 		envKey = fmt.Sprintf("INPUT_%s", strings.ToUpper(envKey))
 		env[envKey] = v
+	}
+
+	for k, v := range s.EnvOverrides {
+		env[k] = v
 	}
 	return env
 }

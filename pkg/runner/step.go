@@ -115,8 +115,13 @@ func runStepExecutor(step step, stage stepStage, executor common.Executor) commo
 					stepResult.Outputs = outputs
 				}
 			}
-			step.getStepModel().Result = stepResult.Outcome.String()
 		}()
+
+		if step.getStepModel().Result != "" {
+			stepResult.Outcome = model.ToStepStatus(step.getStepModel().Result)
+			stepResult.Conclusion = model.ToStepStatus(step.getStepModel().Result)
+			return nil
+		}
 
 		if rc.Run.StepResultsFunc != nil {
 			if ok, result := rc.Run.StepResultsFunc(step.getStepModel()); ok {
