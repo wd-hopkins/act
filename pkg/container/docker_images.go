@@ -6,8 +6,9 @@ import (
 	"context"
 	"fmt"
 
+	cerrdefs "github.com/containerd/errdefs"
 	"github.com/docker/docker/api/types/image"
-	"github.com/docker/docker/client"
+	"github.com/nektos/act/pkg/common"
 )
 
 // ImageExistsLocally returns a boolean indicating if an image with the
@@ -20,15 +21,20 @@ func ImageExistsLocally(ctx context.Context, imageName string, platform string) 
 	defer cli.Close()
 
 	inspectImage, err := cli.ImageInspect(ctx, imageName)
-	if client.IsErrNotFound(err) {
+	if cerrdefs.IsNotFound(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err
 	}
 
-	if platform == "" || platform == "any" || fmt.Sprintf("%s/%s", inspectImage.Os, inspectImage.Architecture) == platform {
+	imagePlatform := fmt.Sprintf("%s/%s", inspectImage.Os, inspectImage.Architecture)
+
+	if platform == "" || platform == "any" || imagePlatform == platform {
 		return true, nil
 	}
+
+	logger := common.Logger(ctx)
+	logger.Infof("image found but platform does not match: %s (image) != %s (platform)\n", imagePlatform, platform)
 
 	return false, nil
 }
@@ -43,7 +49,7 @@ func RemoveImage(ctx context.Context, imageName string, force bool, pruneChildre
 	defer cli.Close()
 
 	inspectImage, err := cli.ImageInspect(ctx, imageName)
-	if client.IsErrNotFound(err) {
+	if cerrdefs.IsNotFound(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err

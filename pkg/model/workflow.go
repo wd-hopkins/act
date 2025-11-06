@@ -80,6 +80,20 @@ func (w *Workflow) UnmarshalYAML(node *yaml.Node) error {
 	return node.Decode((*WorkflowDefault)(w))
 }
 
+type WorkflowStrict Workflow
+
+func (w *WorkflowStrict) UnmarshalYAML(node *yaml.Node) error {
+	// Validate the schema before deserializing it into our model
+	if err := (&schema.Node{
+		Definition: "workflow-root-strict",
+		Schema:     schema.GetWorkflowSchema(),
+	}).UnmarshalYAML(node); err != nil {
+		return errors.Join(err, fmt.Errorf("Actions YAML Strict Schema Validation Error detected:\nFor more information, see: https://nektosact.com/usage/schema.html"))
+	}
+	type WorkflowDefault Workflow
+	return node.Decode((*WorkflowDefault)(w))
+}
+
 type WorkflowDispatchInput struct {
 	Description string   `yaml:"description"`
 	Required    bool     `yaml:"required"`
@@ -380,8 +394,6 @@ func (j *Job) Matrix() map[string][]interface{} {
 
 // GetMatrixes returns the matrix cross product
 // It skips includes and hard fails excludes for non-existing keys
-//
-//nolint:gocyclo
 func (j *Job) GetMatrixes() ([]map[string]interface{}, error) {
 	matrixes := make([]map[string]interface{}, 0)
 	if j.Strategy != nil {
@@ -396,31 +408,11 @@ func (j *Job) GetMatrixes() ([]map[string]interface{}, error) {
 				case []interface{}:
 					for _, i := range t {
 						i := i.(map[string]interface{})
-						extraInclude := true
-						for k := range i {
-							if _, ok := m[k]; ok {
-								includes = append(includes, i)
-								extraInclude = false
-								break
-							}
-						}
-						if extraInclude {
-							extraIncludes = append(extraIncludes, i)
-						}
+						includes = append(includes, i)
 					}
 				case interface{}:
 					v := v.(map[string]interface{})
-					extraInclude := true
-					for k := range v {
-						if _, ok := m[k]; ok {
-							includes = append(includes, v)
-							extraInclude = false
-							break
-						}
-					}
-					if extraInclude {
-						extraIncludes = append(extraIncludes, v)
-					}
+					includes = append(includes, v)
 				}
 			}
 			delete(m, "include")
@@ -742,7 +734,12 @@ func (s *Step) Type() StepType {
 }
 
 // ReadWorkflow returns a list of jobs for a given workflow file reader
-func ReadWorkflow(in io.Reader) (*Workflow, error) {
+func ReadWorkflow(in io.Reader, strict bool) (*Workflow, error) {
+	if strict {
+		w := new(WorkflowStrict)
+		err := yaml.NewDecoder(in).Decode(w)
+		return (*Workflow)(w), err
+	}
 	w := new(Workflow)
 	err := yaml.NewDecoder(in).Decode(w)
 	return w, err

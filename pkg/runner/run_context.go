@@ -161,6 +161,14 @@ func (rc *RunContext) GetBindsAndMounts() ([]string, map[string]string) {
 
 	ext := container.LinuxContainerEnvironmentExtensions{}
 
+	if hostEnv, ok := rc.JobContainer.(*container.HostEnvironment); ok {
+		mounts := map[string]string{}
+		// Permission issues?
+		// binds = append(binds, hostEnv.ToolCache+":/opt/hostedtoolcache")
+		binds = append(binds, hostEnv.GetActPath()+":"+ext.GetActPath())
+		binds = append(binds, hostEnv.ToContainerPath(rc.Config.Workdir)+":"+ext.ToContainerPath(rc.Config.Workdir))
+		return binds, mounts
+	}
 	mounts := map[string]string{
 		"act-toolcache": "/opt/hostedtoolcache",
 		name + "-env":   ext.GetActPath(),
@@ -558,6 +566,7 @@ func (rc *RunContext) UpdateExtraPath(ctx context.Context, githubEnvPath string)
 		return err
 	}
 	s := bufio.NewScanner(reader)
+	s.Buffer(nil, 1024*1024*1024) // increase buffer to 1GB to avoid scanner buffer overflow
 	firstLine := true
 	for s.Scan() {
 		line := s.Text()
@@ -572,7 +581,7 @@ func (rc *RunContext) UpdateExtraPath(ctx context.Context, githubEnvPath string)
 			rc.addPath(ctx, line)
 		}
 	}
-	return nil
+	return s.Err()
 }
 
 // stopJobContainer removes the job container (if it exists) and its volume (if it exists)
