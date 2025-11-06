@@ -8,7 +8,7 @@ import (
 
 	cerrdefs "github.com/containerd/errdefs"
 	"github.com/docker/docker/api/types/image"
-	"github.com/nektos/act/pkg/common"
+	"github.com/wd-hopkins/act/pkg/common"
 )
 
 // ImageExistsLocally returns a boolean indicating if an image with the
