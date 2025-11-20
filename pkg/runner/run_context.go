@@ -55,6 +55,7 @@ type RunContext struct {
 	Cancelled           bool
 	nodeToolFullPath    string
 	FileMounts          map[string]*container.FileEntry
+	Summary             string
 }
 
 func (rc *RunContext) AddMask(mask string) {
