@@ -203,7 +203,8 @@ func runStepExecutor(step step, stage stepStage, executor common.Executor) commo
 		defer cancelTimeOut()
 		monitorJobCancellation(ctx, stepCtx, cctx, rc, logger, ifExpression, step, stage, cancelStepCtx)
 		startTime := time.Now()
-		err = executor(stepCtx)
+		maybeSkipExecutor := executor.IfBool(!step.getStepModel().SkipExecution)
+		err = maybeSkipExecutor(stepCtx)
 		executionTime := time.Since(startTime)
 
 		if err == nil {
@@ -276,7 +277,9 @@ func setupEnv(ctx context.Context, step step) error {
 	exprEval := rc.NewExpressionEvaluator(ctx)
 	for k, v := range *step.getEnv() {
 		if !strings.HasPrefix(k, "INPUT_") {
-			(*step.getEnv())[k] = exprEval.Interpolate(ctx, v)
+			interpolated := exprEval.Interpolate(ctx, v)
+			(*step.getEnv())[k] = interpolated
+			step.getStepModel().RecordEvaluatedEnv(k, interpolated)
 		}
 	}
 	// after we have an evaluated step context, update the expressions evaluator with a new env context
@@ -284,7 +287,9 @@ func setupEnv(ctx context.Context, step step) error {
 	exprEval = rc.NewExpressionEvaluatorWithEnv(ctx, *step.getEnv())
 	for k, v := range *step.getEnv() {
 		if strings.HasPrefix(k, "INPUT_") {
-			(*step.getEnv())[k] = exprEval.Interpolate(ctx, v)
+			interpolated := exprEval.Interpolate(ctx, v)
+			(*step.getEnv())[k] = interpolated
+			step.getStepModel().RecordEvaluatedEnv(k, interpolated)
 		}
 	}
 
