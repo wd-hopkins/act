@@ -589,9 +589,11 @@ type Step struct {
 	With               map[string]string `yaml:"with"`
 	RawContinueOnError string            `yaml:"continue-on-error"`
 	TimeoutMinutes     string            `yaml:"timeout-minutes"`
+	SkipExecution      bool
 	Result             string
 	Logs               string
 	EnvOverrides       map[string]string
+	EnvEvaluated       map[string]string
 }
 
 // String gets the name of step
@@ -625,6 +627,13 @@ func (s *Step) GetEnv() map[string]string {
 		env[k] = v
 	}
 	return env
+}
+
+func (s *Step) RecordEvaluatedEnv(k, v string) {
+	if s.EnvEvaluated == nil {
+		s.EnvEvaluated = make(map[string]string)
+	}
+	s.EnvEvaluated[k] = v
 }
 
 // ShellCommand returns the command for the shell
