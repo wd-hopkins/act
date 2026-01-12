@@ -23,6 +23,7 @@ type Runner interface {
 type Config struct {
 	Actor                              string                       // the user that triggered the event
 	Workdir                            string                       // path to working directory
+	WorkflowDir                        string                       // path to workflow directory
 	ActionCacheDir                     string                       // path used for caching action contents
 	ActionOfflineMode                  bool                         // when offline, use caching action contents
 	BindWorkdir                        bool                         // bind the workdir to the job container
