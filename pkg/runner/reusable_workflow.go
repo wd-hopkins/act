@@ -17,7 +17,7 @@ import (
 )
 
 func newLocalReusableWorkflowExecutor(rc *RunContext) common.Executor {
-	return newReusableWorkflowExecutor(rc, rc.Config.Workdir, rc.Run.Job().Uses)
+	return newReusableWorkflowExecutor(rc, rc.Config.WorkflowDir, rc.Run.Job().Uses)
 }
 
 func newRemoteReusableWorkflowExecutor(rc *RunContext) common.Executor {
