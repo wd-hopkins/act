@@ -56,6 +56,24 @@ type RunContext struct {
 	nodeToolFullPath    string
 	FileMounts          map[string]*container.FileEntry
 	Summary             string
+	WithEvaluated       map[string]string
+}
+
+func (rc *RunContext) RecordEvaluatedInput(k string, v interface{}) {
+	if rc.WithEvaluated == nil {
+		rc.WithEvaluated = make(map[string]string)
+	}
+	if v == nil {
+		rc.WithEvaluated[k] = ""
+	}
+	switch v := v.(type) {
+	case string:
+		rc.WithEvaluated[k] = v
+	case int:
+		rc.WithEvaluated[k] = strconv.Itoa(v)
+	case bool:
+		rc.WithEvaluated[k] = strconv.FormatBool(v)
+	}
 }
 
 func (rc *RunContext) AddMask(mask string) {

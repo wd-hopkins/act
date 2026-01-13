@@ -562,6 +562,7 @@ func setupWorkflowInputs(ctx context.Context, inputs *map[string]interface{}, rc
 			}
 
 			(*inputs)[name] = value
+			rc.caller.runContext.RecordEvaluatedInput(name, value)
 		}
 	}
 }
