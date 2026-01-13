@@ -10,6 +10,7 @@ import (
 type Input struct {
 	actor                              string
 	workdir                            string
+	workflowDir                        string
 	workflowsPath                      string
 	autodetectEvent                    bool
 	eventPath                          string
