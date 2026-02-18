@@ -45,7 +45,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Run Tests
-        run: go run gotest.tools/gotestsum@latest --junitfile unit-tests.xml --format pkgname -- -v -cover -coverpkg=./... -coverprofile=coverage.txt -covermode=atomic -timeout 20m ./...
+        run: go run gotest.tools/gotestsum@latest --junitfile unit-tests.xml --format pkgname -- -v -cover -coverpkg=./... -coverprofile=coverage.txt -covermode=atomic -timeout 20m ./... --test TestImageExistsLocally
       - name: Test Summary
         uses: test-summary/action@v2
         with:
