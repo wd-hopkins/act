@@ -53,7 +53,7 @@ func TestImageExistsLocally(t *testing.T) {
     assert.Equal(t, true, imageDefaultArchExists)
 
     // Validate if another architecture platform can be pulled
-    readerArm64, err := cli.ImagePull(ctx, "node:16-buster-slim", image.PullOptions{
+    readerArm64, err := cli.ImagePull(ctx, "node:20-buster-slim", image.PullOptions{
         Platform: "linux/arm64",
     })
     assert.Nil(t, err)
@@ -62,7 +62,7 @@ func TestImageExistsLocally(t *testing.T) {
     t.Log(string(b))
     assert.Nil(t, err)
 
-    imageArm64Exists, err := ImageExistsLocally(ctx, "node:16-buster-slim", "linux/arm64")
+    imageArm64Exists, err := ImageExistsLocally(ctx, "node:20-buster-slim", "linux/arm64")
     assert.Nil(t, err)
     assert.Equal(t, true, imageArm64Exists)
 }
