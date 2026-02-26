@@ -1041,7 +1041,7 @@ func (rc *RunContext) getGithubContext(ctx context.Context) *model.GithubContext
 	return ghc
 }
 
-func isLocalCheckout(ghc *model.GithubContext, step *model.Step) bool {
+func isLocalCheckout(ghc *model.GithubContext, step *model.Step, runContext *RunContext) bool {
 	if step.Type() == model.StepTypeInvalid {
 		// This will be errored out by the executor later, we need this here to avoid a null panic though
 		return false
@@ -1058,10 +1058,10 @@ func isLocalCheckout(ghc *model.GithubContext, step *model.Step) bool {
 		return false
 	}
 
-	if repository, ok := step.With["repository"]; ok && repository != ghc.Repository {
+	if repository, ok := step.With["repository"]; ok && runContext.ExprEval.Interpolate(context.Background(), repository) != ghc.Repository {
 		return false
 	}
-	if repository, ok := step.With["ref"]; ok && repository != ghc.Ref {
+	if ref, ok := step.With["ref"]; ok && runContext.ExprEval.Interpolate(context.Background(), ref) != ghc.Ref {
 		return false
 	}
 	return true
