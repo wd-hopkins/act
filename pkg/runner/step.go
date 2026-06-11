@@ -116,7 +116,9 @@ func runStepExecutor(step step, stage stepStage, executor common.Executor) commo
 					stepResult.Outputs = outputs
 				}
 			}
-			step.getStepModel().Result = stepResult.Outcome.String()
+			if stage == stepStageMain {
+				step.getStepModel().Result = stepResult.Outcome.String()
+			}
 		}()
 
 		if step.getStepModel().Result != "" {
